@@ -70,19 +70,19 @@ class Processing {
   */
 
   def getAllWordsWithIndex(l: List[(Int, String)]): List[(Int, String)] = {
-    ???
+    l.flatMap( x => getWords(x._2).map( y => (x._1, y)))
   }
 
   def createInverseIndex(l: List[(Int, String)]): Map[String, List[Int]] = {
-    ???
+    l.groupBy(_._2).mapValues(xs => xs.map(v => v._1))
   }
 
   def orConjunction(words: List[String], invInd: Map[String, List[Int]]): List[Int] = {
-    ???
+    words.flatMap( x => invInd.getOrElse(x, List()))
   }
 
   def andConjunction(words: List[String], invInd: Map[String, List[Int]]): List[Int] = {
-    ???
+    words.flatMap( x => invInd.getOrElse(x, List())).groupBy(identity).filter( y => y._2.size == words.size).toList.sortBy(_._1).map(_._1)
   }
 }
 
