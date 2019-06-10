@@ -17,7 +17,7 @@ class Processing {
      * 3. Extracts all words and put them into a list of strings
      */
     if (line == "") List()
-    else line.replaceAll("[^a-zA-Z]+"," ").toLowerCase.split(" ").toList
+    else line.toLowerCase.replaceAll("[^a-z]+"," ").split(" ").toList
 
   } 
   
@@ -53,8 +53,12 @@ class Processing {
   l.map(mapFun).foldLeft(base)(redFun)
 
   def countWordsMR(l: List[String]): List[(String, Int)] = {
-    // mapReduce[???,???,???](null,null,null,l)
-    ???
+    mapReduce[String,(String, Int),List[(String, Int)]](X=>(X,1),insertL,List(),l)
+  }
+
+  def insertL(l:List[(String, Int)], el:(String,Int)):List[(String, Int)] = l match {
+    case Nil => List(el)
+    case x::xs if (el._1.equals(x._1)) => (el._1, el._2 + x._2)::xs case x::xs => x::insertL(xs,el)
   }
   
   
