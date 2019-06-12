@@ -33,7 +33,7 @@ object App {
    */
   def main(args: Array[String]) = {
     val fileName = "Robinson.txt"
-    showAnalysisPerSegment(10000, fileName)
+//    showAnalysisPerSegment(10000, fileName)
     showAnalysisPerChapter(fileName)
   }
 
@@ -44,7 +44,7 @@ object App {
   }
 
   def showAnalysisPerChapter(fileName: String): Unit = {
-    val chapterRegex = "CHAPTER [MDCLXVI]+".r
+    val chapterRegex = "CHAPTER+".r
 
     val book = sentiAnalyse.getDocumentSplitByPredicate(fileName,
       x => chapterRegex.findFirstIn(x).isDefined)

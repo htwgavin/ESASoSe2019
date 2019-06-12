@@ -29,15 +29,25 @@ class Sentiments(sentiFile: String) {
     */
 
   def getDocumentGroupedByCounts(filename: String, wordCount: Int): List[(Int, List[String])] = {
-    ???
+    readFile(filename).sliding(wordCount, wordCount).toList.zipWithIndex.map( x => (x._2 + 1, x._1.map( y => y.toLowerCase)))
   }
 
   def getDocumentSplitByPredicate(filename: String, predicate:String=>Boolean): List[(Int, List[String])] = {
-    ???
+    readFile(filename).foldRight( List(List[String]()) ) {
+      (x, acc) =>
+        if (predicate(x)) List() :: acc.head :: acc.tail
+        else (x :: acc.head) :: acc.tail
+    }.tail.zipWithIndex.map( x => (x._2 + 1, x._1.map( y => y.toLowerCase)))
   }
 
   def analyseSentiments(l: List[(Int, List[String])]): List[(Int, Double, Double)] = {
-    ???
+    val result = l.map( x => {(
+      x._1,
+      x._2.map( y => sentiments.getOrElse(y, 0)).sum.toDouble/x._2.size,
+      x._2.count( y => sentiments.contains(y)).toDouble/x._2.size
+    )})
+    println(result)
+    result
   }
 
   /** ********************************************************************************************
@@ -52,8 +62,19 @@ class Sentiments(sentiFile: String) {
     val src = scala.io.Source.fromFile(url)
     val iter = src.getLines()
     val result: Map[String, Int] = (for (row <- iter) yield {
-      val seg = row.split("\t"); (seg(0) -> seg(1).toInt)
+      val seg = row.split("\t"); seg(0) -> seg(1).toInt
     }).toMap
+    src.close()
+    result
+  }
+
+  def readFile(filename: String): List[String] = {
+    val url = getClass.getResource("/" + filename).getPath
+    val src = scala.io.Source.fromFile(url)
+    val iter = src.getLines()
+    val result: List[String] = (for (row <- iter) yield {
+      row.replaceAll("[^a-zA-Z]+"," ").split(" ").toList
+    }).toList.flatten
     src.close()
     result
   }
