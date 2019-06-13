@@ -33,11 +33,14 @@ class Sentiments(sentiFile: String) {
   }
 
   def getDocumentSplitByPredicate(filename: String, predicate:String=>Boolean): List[(Int, List[String])] = {
-    readFile(filename).foldRight( List(List[String]()) ) {
+    readLines(filename).foldRight( List(List[String]()) ) {
       (x, acc) =>
         if (predicate(x)) List() :: acc.head :: acc.tail
         else (x :: acc.head) :: acc.tail
-    }.tail.zipWithIndex.map( x => (x._2 + 1, x._1.map( y => y.toLowerCase)))
+    }.tail.zipWithIndex.map( x => {(
+      x._2 + 1,
+      x._1.flatMap( y => y.toLowerCase.replaceAll("[^a-zA-Z]+"," ").split(" ").toList))
+    })
   }
 
   def analyseSentiments(l: List[(Int, List[String])]): List[(Int, Double, Double)] = {
@@ -75,6 +78,14 @@ class Sentiments(sentiFile: String) {
     val result: List[String] = (for (row <- iter) yield {
       row.replaceAll("[^a-zA-Z]+"," ").split(" ").toList
     }).toList.flatten
+    src.close()
+    result
+  }
+
+  def readLines(filename: String): List[String] = {
+    val url = getClass.getResource("/" + filename).getPath
+    val src = scala.io.Source.fromFile(url)
+    val result = src.getLines().toList
     src.close()
     result
   }
