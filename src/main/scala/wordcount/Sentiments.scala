@@ -44,13 +44,11 @@ class Sentiments(sentiFile: String) {
   }
 
   def analyseSentiments(l: List[(Int, List[String])]): List[(Int, Double, Double)] = {
-    val result = l.map( x => {(
+    l.map( x => {(
       x._1-1,
       x._2.map( y => sentiments.getOrElse(y, 0)).sum.toDouble / x._2.count( y => sentiments.contains(y)).toDouble,
       x._2.count( y => sentiments.contains(y)).toDouble / x._2.size
     )})
-    println(result)
-    result
   }
 
   /** ********************************************************************************************
