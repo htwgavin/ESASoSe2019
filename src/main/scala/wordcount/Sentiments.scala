@@ -29,7 +29,7 @@ class Sentiments(sentiFile: String) {
     */
 
   def getDocumentGroupedByCounts(filename: String, wordCount: Int): List[(Int, List[String])] = {
-    readFile(filename).sliding(wordCount, wordCount).toList.zipWithIndex.map( x => (x._2 + 1, x._1.map( y => y.toLowerCase)))
+    readFile(filename).sliding(wordCount, wordCount).toList.zipWithIndex.map( x => (x._2 + 1, x._1))
   }
 
   def getDocumentSplitByPredicate(filename: String, predicate:String=>Boolean): List[(Int, List[String])] = {
@@ -45,9 +45,9 @@ class Sentiments(sentiFile: String) {
 
   def analyseSentiments(l: List[(Int, List[String])]): List[(Int, Double, Double)] = {
     val result = l.map( x => {(
-      x._1,
-      x._2.map( y => sentiments.getOrElse(y, 0)).sum.toDouble/x._2.size,
-      x._2.count( y => sentiments.contains(y)).toDouble/x._2.size
+      x._1-1,
+      x._2.map( y => sentiments.getOrElse(y, 0)).sum.toDouble / x._2.count( y => sentiments.contains(y)).toDouble,
+      x._2.count( y => sentiments.contains(y)).toDouble / x._2.size
     )})
     println(result)
     result
@@ -76,8 +76,8 @@ class Sentiments(sentiFile: String) {
     val src = scala.io.Source.fromFile(url)
     val iter = src.getLines()
     val result: List[String] = (for (row <- iter) yield {
-      row.replaceAll("[^a-zA-Z]+"," ").split(" ").toList
-    }).toList.flatten
+      row.toLowerCase.replaceAll("[^a-z]+"," ").split(" ").toList
+    }).toList.flatten.filter( x => !x.isEmpty)
     src.close()
     result
   }

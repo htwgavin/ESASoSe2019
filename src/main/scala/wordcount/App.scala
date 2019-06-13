@@ -33,7 +33,7 @@ object App {
    */
   def main(args: Array[String]) = {
     val fileName = "Robinson.txt"
-//    showAnalysisPerSegment(10000, fileName)
+    showAnalysisPerSegment(10000, fileName)
     showAnalysisPerChapter(fileName)
   }
 
